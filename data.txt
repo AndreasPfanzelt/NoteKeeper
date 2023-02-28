@@ -1,0 +1,16 @@
+
+    Data-Entries
+        id
+        text -> replace with link later on
+        tags {
+            tag_id
+        }
+
+    Tags
+        id
+        title
+        tagType_id
+
+    Tag-Type
+        id
+        title

@@ -9,6 +9,9 @@ const notebookListElement = document.querySelector('.notebook-list');
 const titleElement = document.querySelector('h1');
 const textElement = document.querySelector('.text');
 const tagsElement = document.querySelector('.tags');
+const tagSearchElement = document.querySelector('.tagSearch');
+
+let currentTextEntry;
 
 class Tag {
     constructor(id, title) {
@@ -166,6 +169,7 @@ function ShowNotebook(tagId) {
  */
 function ShowTextEntry(textEntryId) {
     const textEntry = noteKeeper.GetTextEntryById(textEntryId);
+    currentTextEntry = textEntry;
     titleElement.textContent = textEntry.title;
     textElement.innerHTML = textEntry.text;
 
@@ -174,18 +178,6 @@ function ShowTextEntry(textEntryId) {
     for (let tag of tags){
         tagsElement.appendChild(CreateTextEntryTagButton(tag, textEntry));
     }
-
-    let inputElement = document.createElement('input');
-    tagsElement.appendChild(inputElement);
-
-    inputElement.addEventListener('blur', () => {
-        noteKeeper.AddTag(inputElement.value);
-        inputElement.value = '';
-        const tag = noteKeeper.tags[noteKeeper.tags.length - 1];
-        tagsElement.appendChild(CreateTextEntryTagButton(tag, textEntry));
-
-        tagsElement.appendChild(inputElement);
-    });
 }
 
 function CreateTextEntryTagButton(tag, textEntry) {
@@ -211,8 +203,20 @@ noteKeeper.AddTextEntry('Test', 'Test',  [noteKeeper.tags[0].id]);
 noteKeeper.AddTextEntry('Test2', 'Test2',  [noteKeeper.tags[0].id, noteKeeper.tags[1].id]);
 noteKeeper.AddTextEntry('Test3', 'Test3',  [noteKeeper.tags[0].id]);
 
-ShowNotebook(noteKeeper.tags[0].id);
+tagSearchElement.addEventListener('blur', () => {
+    tagSearchElement.value = tagSearchElement.value.trim();
+    if(tagSearchElement.value !== ''){
+        noteKeeper.AddTag(tagSearchElement.value);
+        const tag = noteKeeper.tags[noteKeeper.tags.length - 1];
+        currentTextEntry.tagIds.push(tag.id);
 
+        tagSearchElement.value = '';
+        tagsElement.appendChild(CreateTextEntryTagButton(tag, currentTextEntry));
+    }
+});
+
+
+ShowNotebook(noteKeeper.tags[0].id);
 
 
 
