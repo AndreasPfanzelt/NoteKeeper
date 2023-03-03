@@ -57,6 +57,11 @@ class NoteKeeper {
     }
 
     AddTag(title) {
+        const duplicateTags = noteKeeper.tags.filter(tag => tag.title === title);
+        if (duplicateTags.length > 0){
+            return duplicateTags[0];
+        }
+
         const id = GenerateGuid();
         const tag = new Tag(id, title);
         this.tags.push(tag);
@@ -203,6 +208,58 @@ function CreateTextEntryTagButton(tag, textEntry) {
     return tagElement;
 }
 
+function SearchSimilarStrings(value, list) {
+    return list.filter(item => {
+        return item.toLowerCase().includes(value.toLowerCase());
+    });
+}
+
+function AddTagToEntry(tagTitle, entry) {
+    const tag = noteKeeper.AddTag(tagTitle);
+    entry.tagIds.indexOf(tag.id) === -1 ? entry.tagIds.push(tag.id) : 0;
+}
+
+function DisplayTagSuggestions(suggestions) {
+    tagsSearchResultContainer.innerHTML = '';
+    if (suggestions.length === 0) {
+        tagsSearchResultContainer.style.display = 'none';
+    } else {
+        suggestions.forEach(suggestion => {
+            const div = document.createElement('div');
+            div.classList.add('search-result');
+            div.textContent = suggestion;
+            div.addEventListener('click', () => {
+                AddTagToEntry(suggestion, currentTextEntry);
+                tagsSearchInput.value = '';
+                tagsSearchResultContainer.style.display = 'none';
+            });
+            tagsSearchResultContainer.appendChild(div);
+        });
+        tagsSearchResultContainer.style.display = 'block';
+    }
+}
+
+tagsSearchInput.addEventListener('input', () => {
+    const value = tagsSearchInput.value.trim();
+    const results = SearchSimilarStrings(value, noteKeeper.tags.map(tag => tag.title).sort());
+    DisplayTagSuggestions(results);
+});
+
+tagsSearchInput.addEventListener('keyup', (event) => {
+    if (event.key === 'Enter' || event.keyCode === 13) {
+        AddTagToEntry(tagsSearchInput.value.trim(), currentTextEntry);
+        tagsSearchInput.value = '';
+        tagsSearchResultContainer.style.display = 'none';
+        tagsSearchInput.blur();
+    }
+});
+
+document.addEventListener('click', event => {
+    if (!event.target.closest('.search-bar-container')) {
+        tagsSearchResultContainer.style.display = 'none';
+    }
+});
+
 const noteKeeper = new NoteKeeper();
 
 noteKeeper.AddTag('General');
@@ -224,56 +281,7 @@ noteKeeper.AddTextEntry('Test', 'Test', [noteKeeper.tags[0].id]);
 noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[0].id, noteKeeper.tags[1].id]);
 noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[0].id]);
 
-function SearchSimilarStrings(value, list) {
-    return list.filter(item => {
-        return item.toLowerCase().includes(value.toLowerCase());
-    });
-}
-
-function DisplayTagSuggestions(suggestions) {
-    tagsSearchResultContainer.innerHTML = '';
-    if (suggestions.length === 0) {
-        tagsSearchResultContainer.style.display = 'none';
-    } else {
-        suggestions.forEach(suggestion => {
-            const div = document.createElement('div');
-            div.classList.add('search-result');
-            div.textContent = suggestion;
-            div.addEventListener('click', () => {
-                tagsSearchInput.value = suggestion;
-                tagsSearchResultContainer.style.display = 'none';
-            });
-            tagsSearchResultContainer.appendChild(div);
-        });
-        tagsSearchResultContainer.style.display = 'block';
-    }
-}
-
-tagsSearchInput.addEventListener('input', () => {
-    const value = tagsSearchInput.value.trim();
-    const results = SearchSimilarStrings(value, noteKeeper.tags.map(tag => tag.title).sort());
-    DisplayTagSuggestions(results);
-});
-
-document.addEventListener('click', event => {
-   if (!event.target.closest('.search-bar-container')) {
-       tagsSearchResultContainer.style.display = 'none';
-   }
-});
-
-tagSearchElement.addEventListener('keydown', (event) => {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        const tag = tagsInput.value.trim();
-        if (tag !== "") {
-            noteKeeper.AddTag(tag);
-            tagsInput.value = "";
-        }
-    }
-});
-
 ShowNotebook(noteKeeper.tags[0].id);
-
 
 ///////////////////////////////////////////////////////////////////////////
 
