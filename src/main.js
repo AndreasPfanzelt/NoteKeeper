@@ -11,7 +11,7 @@ const tagListElement = document.querySelector('.tag-list');
 const notebookListElement = document.querySelector('.notebook-list');
 const titleElement = document.querySelector('h1');
 const textElement = document.querySelector('.text');
-const tagsElement = document.querySelector('.tags');
+const tagsElement = document.querySelector('.tag-list-container');
 const tagsSearchInput = document.getElementById('search-bar-input');
 const tagsSearchResultContainer = document.getElementById('search-results-container');
 
@@ -251,6 +251,8 @@ tagsSearchInput.addEventListener('keyup', (event) => {
         tagsSearchInput.value = '';
         tagsSearchResultContainer.style.display = 'none';
         tagsSearchInput.blur();
+
+        ShowTextEntry(currentTextEntry.id);
     }
 });
 
@@ -274,12 +276,11 @@ noteKeeper.AddTag('Shop');
 noteKeeper.AddTag('Building');
 noteKeeper.AddTag('Settlement');
 
-
 PopulateTagList();
 
 noteKeeper.AddTextEntry('Test', 'Test', [noteKeeper.tags[0].id]);
-noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[0].id, noteKeeper.tags[1].id]);
-noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[0].id]);
+noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[1].id, noteKeeper.tags[2].id]);
+noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[3].id]);
 
 ShowNotebook(noteKeeper.tags[0].id);
 

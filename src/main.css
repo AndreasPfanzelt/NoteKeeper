@@ -47,17 +47,17 @@ body {
 */
 
 button {
-    font-size: 14px;
-    background-color: #444;
-    color: #FBFAF5;
-    border: none;
-    padding: 0.5rem 1rem;
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    border: none;
 }
 
 .tag {
+    background-color: #444;
+    color: #FBFAF5;
     margin-right: 5px;
+    margin-bottom: 5px;
+    padding: 5px;
+    transition: all 0.1s ease-in-out;
 }
 
 .tag:after {
@@ -67,7 +67,7 @@ button {
 }
 
 button:hover {
-    background-color: #666;
+    background-color: #555;
 }
 
 /*
@@ -113,6 +113,6 @@ button:hover {
     cursor: pointer;
 }
 
-.search-result.hover {
+.search-result:hover {
     background-color: #444;
 }
