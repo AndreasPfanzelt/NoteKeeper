@@ -4,15 +4,26 @@ const dataEntryStorageKey = "wbnotes-dataentries";
 
 const classActive = 'active';
 
+/*
+    Html-elements to access.
+ */
 const tagListElement = document.querySelector('.tag-list');
 const notebookListElement = document.querySelector('.notebook-list');
 const titleElement = document.querySelector('h1');
 const textElement = document.querySelector('.text');
 const tagsElement = document.querySelector('.tags');
-const tagSearchElement = document.querySelector('.tagSearch');
+const tagsSearchInput = document.getElementById('search-bar-input');
+const tagsSearchResultContainer = document.getElementById('search-results-container');
 
+/*
+    Necessary global variables.
+ */
 let currentTextEntry;
 
+
+/*
+    Classes.
+ */
 class Tag {
     constructor(id, title) {
         this.id = id;
@@ -104,7 +115,7 @@ function PopulateTagList() {
     tagListElement.innerHTML = '';
     const tags = noteKeeper.tags;
     for (const tag of tags) {
-       tagListElement.appendChild(CreateTagElement(tag));
+        tagListElement.appendChild(CreateTagElement(tag));
     }
 }
 
@@ -116,11 +127,11 @@ function CreateTagElement(tag) {
     tagElement.innerHTML = tag.title;
     // Event listener to select tag.
     tagElement.addEventListener('click', () => {
-       ShowNotebook(tag.id);
-       tagListElement.querySelectorAll('li').forEach((li) => {
-           li.classList.remove(classActive);
-       });
-       tagElement.classList.add(classActive);
+        ShowNotebook(tag.id);
+        tagListElement.querySelectorAll('li').forEach((li) => {
+            li.classList.remove(classActive);
+        });
+        tagElement.classList.add(classActive);
     });
 
     return tagElement;
@@ -145,11 +156,11 @@ function CreateNotebookElement(notebookEntry) {
     notebookElement.textContent = notebookEntry.title;
     // Event listener to select notebook entry.
     notebookElement.addEventListener('click', () => {
-       ShowTextEntry(notebookEntry.id);
-       notebookListElement.querySelectorAll('li').forEach((li) => {
-          li.classList.remove(classActive);
-       });
-       notebookElement.classList.add(classActive);
+        ShowTextEntry(notebookEntry.id);
+        notebookListElement.querySelectorAll('li').forEach((li) => {
+            li.classList.remove(classActive);
+        });
+        notebookElement.classList.add(classActive);
     });
 
     return notebookElement;
@@ -175,7 +186,7 @@ function ShowTextEntry(textEntryId) {
 
     const tags = noteKeeper.GetTagsByIds(textEntry.tagIds);
     tagsElement.innerHTML = '';
-    for (let tag of tags){
+    for (let tag of tags) {
         tagsElement.appendChild(CreateTextEntryTagButton(tag, textEntry));
     }
 }
@@ -195,33 +206,73 @@ function CreateTextEntryTagButton(tag, textEntry) {
 const noteKeeper = new NoteKeeper();
 
 noteKeeper.AddTag('General');
-noteKeeper.AddTag('Test');
+noteKeeper.AddTag('Monster');
+noteKeeper.AddTag('NPC');
+noteKeeper.AddTag('Organization');
+noteKeeper.AddTag('Deity');
+noteKeeper.AddTag('Trader');
+noteKeeper.AddTag('Pirate');
+noteKeeper.AddTag('Leader');
+noteKeeper.AddTag('Shop');
+noteKeeper.AddTag('Building');
+noteKeeper.AddTag('Settlement');
+
 
 PopulateTagList();
 
-noteKeeper.AddTextEntry('Test', 'Test',  [noteKeeper.tags[0].id]);
-noteKeeper.AddTextEntry('Test2', 'Test2',  [noteKeeper.tags[0].id, noteKeeper.tags[1].id]);
-noteKeeper.AddTextEntry('Test3', 'Test3',  [noteKeeper.tags[0].id]);
+noteKeeper.AddTextEntry('Test', 'Test', [noteKeeper.tags[0].id]);
+noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[0].id, noteKeeper.tags[1].id]);
+noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[0].id]);
 
-tagSearchElement.addEventListener('blur', () => {
-    tagSearchElement.value = tagSearchElement.value.trim();
-    if(tagSearchElement.value !== ''){
-        noteKeeper.AddTag(tagSearchElement.value);
-        const tag = noteKeeper.tags[noteKeeper.tags.length - 1];
-        currentTextEntry.tagIds.push(tag.id);
+function SearchSimilarStrings(value, list) {
+    return list.filter(item => {
+        return item.toLowerCase().includes(value.toLowerCase());
+    });
+}
 
-        tagSearchElement.value = '';
-        tagsElement.appendChild(CreateTextEntryTagButton(tag, currentTextEntry));
+function DisplayTagSuggestions(suggestions) {
+    tagsSearchResultContainer.innerHTML = '';
+    if (suggestions.length === 0) {
+        tagsSearchResultContainer.style.display = 'none';
+    } else {
+        suggestions.forEach(suggestion => {
+            const div = document.createElement('div');
+            div.classList.add('search-result');
+            div.textContent = suggestion;
+            div.addEventListener('click', () => {
+                tagsSearchInput.value = suggestion;
+                tagsSearchResultContainer.style.display = 'none';
+            });
+            tagsSearchResultContainer.appendChild(div);
+        });
+        tagsSearchResultContainer.style.display = 'block';
+    }
+}
+
+tagsSearchInput.addEventListener('input', () => {
+    const value = tagsSearchInput.value.trim();
+    const results = SearchSimilarStrings(value, noteKeeper.tags.map(tag => tag.title).sort());
+    DisplayTagSuggestions(results);
+});
+
+document.addEventListener('click', event => {
+   if (!event.target.closest('.search-bar-container')) {
+       tagsSearchResultContainer.style.display = 'none';
+   }
+});
+
+tagSearchElement.addEventListener('keydown', (event) => {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        const tag = tagsInput.value.trim();
+        if (tag !== "") {
+            noteKeeper.AddTag(tag);
+            tagsInput.value = "";
+        }
     }
 });
 
-
 ShowNotebook(noteKeeper.tags[0].id);
-
-
-
-
-
 
 
 ///////////////////////////////////////////////////////////////////////////
