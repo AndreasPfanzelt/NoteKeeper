@@ -7,7 +7,6 @@ const classActive = 'active';
 /*
     Html-elements to access.
  */
-const tagListElement = document.querySelector('.tag-list');
 const notebookListElement = document.querySelector('.notebook-list');
 const titleElement = document.querySelector('h1');
 const textElement = document.querySelector('.text');
@@ -32,11 +31,12 @@ class Tag {
 }
 
 class TextEntry {
-    constructor(id, title, text, tagIds) {
+    constructor(id, title, text, tagIds, parentTextEntryId = null) {
         this.id = id;
         this.title = title;
         this.text = text;
         this.tagIds = tagIds;
+        this.parentTextEntryId = parentTextEntryId;
     }
 }
 
@@ -224,6 +224,19 @@ document.addEventListener('click', event => {
     }
 });
 
+function PopulateSidebar() {
+    const textEntries = noteKeeper.textEntries.filter(textEntry => textEntry.parentTextEntryId === null);
+    textEntries.forEach(textEntry => {
+        const entryElement = document.createElement('li');
+        entryElement.innerHTML = textEntry.title;
+        entryElement.addEventListener('click', () => {
+            ShowTextEntry(textEntry.id);
+
+        });
+        notebookListElement.appendChild(entryElement);
+    });
+}
+
 const noteKeeper = new NoteKeeper();
 
 noteKeeper.AddTag('General');
@@ -238,10 +251,16 @@ noteKeeper.AddTag('Shop');
 noteKeeper.AddTag('Building');
 noteKeeper.AddTag('Settlement');
 
-noteKeeper.AddTextEntry('Test', 'Test', [noteKeeper.tags[0].id]);
+noteKeeper.AddTextEntry(
+    'Home',
+    'This is the landing page, containing links to every possible function.',
+    [noteKeeper.tags[0].id]
+);
 noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[1].id, noteKeeper.tags[2].id]);
 noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[3].id]);
 
+PopulateSidebar();
+ShowTextEntry(noteKeeper.textEntries[0].id);
 
 ///////////////////////////////////////////////////////////////////////////
 

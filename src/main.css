@@ -33,6 +33,26 @@ body {
     overflow: auto;
 }
 
+.notebook-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notebook-list li {
+    padding-bottom: 3px;
+    padding-top: 3px;
+    cursor: pointer;
+}
+
+.notebook-list li:hover {
+    background-color: #555;
+}
+
+.notebook-list li.active {
+    font-weight: bold;
+}
+
 /*
     Text-entry.
  */
@@ -40,6 +60,11 @@ body {
 .content {
     margin-left: 244px;
     padding: 1rem;
+}
+
+.text {
+    margin-top: 30px;
+    line-height: 1.5;
 }
 
 /*
