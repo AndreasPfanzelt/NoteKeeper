@@ -114,35 +114,6 @@ class NoteKeeper {
 }
 
 /*
-    Update the UI-element for the tag-list.
- */
-function PopulateTagList() {
-    tagListElement.innerHTML = '';
-    const tags = noteKeeper.tags;
-    for (const tag of tags) {
-        tagListElement.appendChild(CreateTagElement(tag));
-    }
-}
-
-/*
-    Create a UI-element for a tag.
- */
-function CreateTagElement(tag) {
-    const tagElement = document.createElement('li');
-    tagElement.innerHTML = tag.title;
-    // Event listener to select tag.
-    tagElement.addEventListener('click', () => {
-        ShowNotebook(tag.id);
-        tagListElement.querySelectorAll('li').forEach((li) => {
-            li.classList.remove(classActive);
-        });
-        tagElement.classList.add(classActive);
-    });
-
-    return tagElement;
-}
-
-/*
     Update the UI-element for the notebook-list.
  */
 function PopulateNotebookList(tagId) {
@@ -169,15 +140,6 @@ function CreateNotebookElement(notebookEntry) {
     });
 
     return notebookElement;
-}
-
-/*
-    Show a notebook.
- */
-function ShowNotebook(tagId) {
-    PopulateNotebookList(tagId);
-    titleElement.textContent = 'Notebook';
-    titleElement.innerHTML = '';
 }
 
 /*
@@ -276,13 +238,10 @@ noteKeeper.AddTag('Shop');
 noteKeeper.AddTag('Building');
 noteKeeper.AddTag('Settlement');
 
-PopulateTagList();
-
 noteKeeper.AddTextEntry('Test', 'Test', [noteKeeper.tags[0].id]);
 noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[1].id, noteKeeper.tags[2].id]);
 noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[3].id]);
 
-ShowNotebook(noteKeeper.tags[0].id);
 
 ///////////////////////////////////////////////////////////////////////////
 
