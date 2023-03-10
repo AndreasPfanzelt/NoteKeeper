@@ -141,3 +141,65 @@ button:hover {
 .search-result:hover {
     background-color: #444;
 }
+
+/*
+    CSS for text-entries
+ */
+
+.entry {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.character h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.character .info {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.character .field {
+    flex: 1 1 50%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.character .field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.character .field input,
+.character .field textarea {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.character .field textarea {
+    height: 100px;
+}
+
+.location .field,
+.organization .field {
+    flex: 1 1 100%;
+}
+
+.location .field input[type="text"],
+.organization .field input[type="text"] {
+    width: 100%;
+}
+
+.location .field textarea,
+.organization .field textarea {
+    width: 100%;
+    height: 100px;
+}
