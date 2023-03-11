@@ -161,6 +161,8 @@ function CreateTextEntryTagButton(tag, textEntry) {
 function AddTagToEntry(tagTitle, entry) {
     const tag = noteKeeper.AddTag(tagTitle);
     entry.tagIds.indexOf(tag.id) === -1 ? entry.tagIds.push(tag.id) : 0;
+
+    DisplayTextEntry(currentTextEntry.id);
 }
 
 
