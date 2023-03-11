@@ -58,6 +58,7 @@ body {
  */
 
 .content {
+    width: 100%;
     margin-left: 244px;
     padding: 1rem;
 }
@@ -202,4 +203,41 @@ button:hover {
 .organization .field textarea {
     width: 100%;
     height: 100px;
+}
+
+/*
+    CSS for the landing page
+ */
+
+#entry-search-input {
+    display: flex;
+    justify-content: center;
+    margin: 50px auto 50px;
+    width: 50%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+}
+
+
+#entry-search-input:focus {
+    outline: none;
+}
+
+#entry-table {
+    border-collapse: collapse;
+    width: 80%;
+    margin: 0 auto;
+}
+#entry-table td, #entry-table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+#entry-table th {
+    background-color: #444;
+}
+#entry-table tr:hover {
+    background-color: #444;
 }

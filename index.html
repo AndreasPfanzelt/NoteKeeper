@@ -9,17 +9,43 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <h2>Home</h2>
             <ul class="notebook-list"></ul>
         </div>
         <div class="content">
-            <h1 class="title">Title</h1>
-            <div class="tag-list-container"></div>
-            <div class="search-bar-container">
-                <input type="text" id="search-bar-input" placeholder="Add tag...">
-                <div id="search-results-container"></div>
+            <div id="landing-page-content">
+                <h1 class="title">Home</h1>
+                <input type="text" id="entry-search-input" name="search" placeholder="Search for entries...">
+                <div id="entry-search-results-container">
+                    <table id="entry-table">
+                        <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Tags</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><a href="#">Entry 1</a></td>
+                            <td>Category 1</td>
+                            <td>Tag1, Tag2, Tag3</td>
+                        </tr>
+                        <tr>
+                            <td><a href="#">Entry 2</a></td>
+                            <td>Category 2</td>
+                            <td>Tag1, Tag2, Tag3</td>
+                        </tr>
+                        <tr>
+                            <td><a href="#">Entry 3</a></td>
+                            <td>Category 3</td>
+                            <td>Tag1, Tag2, Tag3</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="text"></div>
+            <div id="text-entry-content">
+            </div>
         </div>
     </div>
 </body>
