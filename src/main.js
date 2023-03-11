@@ -216,25 +216,7 @@ function InitializeTagSearch(){
 }
 
 function InitializeDummyData() {
-    noteKeeper.AddTag('General');
-    noteKeeper.AddTag('Monster');
-    noteKeeper.AddTag('NPC');
-    noteKeeper.AddTag('Organization');
-    noteKeeper.AddTag('Deity');
-    noteKeeper.AddTag('Trader');
-    noteKeeper.AddTag('Pirate');
-    noteKeeper.AddTag('Leader');
-    noteKeeper.AddTag('Shop');
-    noteKeeper.AddTag('Building');
-    noteKeeper.AddTag('Settlement');
 
-    noteKeeper.AddTextEntry(
-        'Test1',
-        'Text for test1.',
-        [noteKeeper.tags[0].id]
-    );
-    noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[1].id, noteKeeper.tags[2].id]);
-    noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[3].id]);
 }
 
 
@@ -286,7 +268,7 @@ function DisplayEntrySuggestions(textEntries) {
     textEntries.forEach(textEntry => {
         const row = document.createElement('tr');
         row.addEventListener('click', () => {
-
+            DisplayTextEntry(textEntry.id);
         });
 
         const titleCell = document.createElement('td');

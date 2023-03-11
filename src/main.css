@@ -256,4 +256,5 @@ button:hover {
 }
 #entry-table tr:hover {
     background-color: #444;
+    cursor: pointer;
 }
