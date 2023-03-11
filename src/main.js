@@ -27,7 +27,6 @@ const tagsSearchResultContainer = document.getElementById('search-results-contai
  */
 let currentTextEntry;
 
-
 /*
     Classes.
  */
@@ -258,6 +257,9 @@ function DisplayEntrySuggestions(suggestions) {
 
     suggestions.forEach(suggestion => {
         const row = document.createElement('tr');
+        row.addEventListener('click', () => {
+
+        });
 
         const titleCell = document.createElement('td');
         titleCell.textContent = suggestion;
@@ -305,6 +307,30 @@ function InitializeDummyData() {
     noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[3].id]);
 }
 
+function LoadHtmlTemplate(path) {
+    fetch(path)
+        .then(response => response.text())
+        .then(data => {
+            return data;
+        });
+}
+
+function ApplyTemplate(htmlElement, content) {
+    htmlElement.innerHTML = content;
+}
+
+function LoadRequiredModules() {
+    const required_modules = document.querySelectorAll('[id^="require-"]')
+
+    required_modules.forEach(required_module => {
+        const moduleId = required_module.id.replace('require-', '');
+
+        const module = LoadHtmlTemplate('templates/modules.html');
+
+    });
+}
+
+
 /*
     Here starts the actual script-execution.
  */
@@ -314,6 +340,7 @@ InitializeTextEntrySearch();
 InitializeDummyData();
 PopulateSidebar();
 ShowTextEntry(noteKeeper.textEntries[0].id);
+LoadRequiredModules();
 
 ///////////////////////////////////////////////////////////////////////////
 
