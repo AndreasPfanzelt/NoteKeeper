@@ -7,7 +7,15 @@ const classActive = 'active';
 /*
     Html-elements to access.
  */
+
+// Sidebar
 const notebookListElement = document.querySelector('.notebook-list');
+
+// Landing-Page
+const entrySearchInput = document.getElementById('entry-search-input');
+const entrySearchResultTable = document.getElementById('entry-table');
+
+// TextEntries
 const titleElement = document.querySelector('h1');
 const textElement = document.querySelector('.text');
 const tagsElement = document.querySelector('.tag-list-container');
@@ -146,6 +154,8 @@ function CreateNotebookElement(notebookEntry) {
     Show a textEntry.
  */
 function ShowTextEntry(textEntryId) {
+    return;
+
     const textEntry = noteKeeper.GetTextEntryById(textEntryId);
     currentTextEntry = textEntry;
     titleElement.textContent = textEntry.title;
@@ -201,28 +211,31 @@ function DisplayTagSuggestions(suggestions) {
     }
 }
 
-tagsSearchInput.addEventListener('input', () => {
-    const value = tagsSearchInput.value.trim();
-    const results = SearchSimilarStrings(value, noteKeeper.tags.map(tag => tag.title).sort());
-    DisplayTagSuggestions(results);
-});
+function InitializeTagSearch(){
+    tagsSearchInput.addEventListener('input', () => {
+        const value = tagsSearchInput.value.trim();
+        const results = SearchSimilarStrings(value, noteKeeper.tags.map(tag => tag.title).sort());
+        DisplayTagSuggestions(results);
+    });
 
-tagsSearchInput.addEventListener('keyup', (event) => {
-    if (event.key === 'Enter' || event.keyCode === 13) {
-        AddTagToEntry(tagsSearchInput.value.trim(), currentTextEntry);
-        tagsSearchInput.value = '';
-        tagsSearchResultContainer.style.display = 'none';
-        tagsSearchInput.blur();
+    tagsSearchInput.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter' || event.keyCode === 13) {
+            AddTagToEntry(tagsSearchInput.value.trim(), currentTextEntry);
+            tagsSearchInput.value = '';
+            tagsSearchResultContainer.style.display = 'none';
+            tagsSearchInput.blur();
 
-        ShowTextEntry(currentTextEntry.id);
-    }
-});
+            ShowTextEntry(currentTextEntry.id);
+        }
+    });
 
-document.addEventListener('click', event => {
-    if (!event.target.closest('.search-bar-container')) {
-        tagsSearchResultContainer.style.display = 'none';
-    }
-});
+    document.addEventListener('click', event => {
+        if (!event.target.closest('.search-bar-container')) {
+            tagsSearchResultContainer.style.display = 'none';
+        }
+    });
+}
+
 
 function PopulateSidebar() {
     const textEntries = noteKeeper.textEntries.filter(textEntry => textEntry.parentTextEntryId === null);
@@ -236,6 +249,37 @@ function PopulateSidebar() {
         notebookListElement.appendChild(entryElement);
     });
 }
+
+function DisplayEntrySuggestions(suggestions) {
+    // Clear any existing rows from the table.
+    while (entrySearchResultTable.children[1]) {
+        entrySearchResultTable.removeChild(entrySearchResultTable.children[1]);
+    }
+
+    suggestions.forEach(suggestion => {
+        const row = document.createElement('tr');
+
+        const titleCell = document.createElement('td');
+        titleCell.textContent = suggestion;
+        row.appendChild(titleCell);
+
+        const categoryCell = document.createElement('td');
+        categoryCell.textContent = 'placeholder';
+        row.appendChild(categoryCell);
+
+        const tagsCell = document.createElement('td');
+        tagsCell.textContent = 'placeholder';
+        row.appendChild(tagsCell);
+
+        entrySearchResultTable.appendChild(row);
+    });
+}
+
+entrySearchInput.addEventListener('input', () => {
+    const value = entrySearchInput.value.trim();
+    const results = SearchSimilarStrings(value, noteKeeper.textEntries.map(entry => entry.title).sort());
+    DisplayEntrySuggestions(results);
+});
 
 const noteKeeper = new NoteKeeper();
 

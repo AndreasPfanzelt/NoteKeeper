@@ -209,6 +209,11 @@ button:hover {
     CSS for the landing page
  */
 
+#landing-page-content h1 {
+    display: flex;
+    justify-content: center;
+}
+
 #entry-search-input {
     display: flex;
     justify-content: center;
@@ -218,6 +223,9 @@ button:hover {
     font-size: 16px;
     border: none;
     border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #333;
+    color: #FBFAF5;
 }
 
 
