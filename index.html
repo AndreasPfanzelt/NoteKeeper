@@ -12,7 +12,7 @@
             <ul class="notebook-list"></ul>
         </div>
         <div class="content">
-            <div id="landing-page-content">
+            <div id="landing-page" class="module">
                 <h1 class="title">Home</h1>
                 <input type="text" id="entry-search-input" name="search" placeholder="Search for entries...">
                 <div id="entry-search-results-container">
@@ -27,22 +27,16 @@
                     </table>
                 </div>
             </div>
-            <div id="require-text-entry-module">
-            </div>
-        </div>
-    </div>
-    <div id="modules" style="visibility: hidden;">
-        <div id="text-entry-content-module">
-            <h1 class="title">Title</h1>
-            <div id="require-tags-container-module"></div>
-            <div class="text-container"></div>
-        </div>
-
-        <div id="tags-container-module">
-            <div class="tag-list-container"></div>
-            <div class="search-bar-container">
-                <input type="text" id="search-bar-input" placeholder="Add tag...">
-                <div id="search-results-container"></div>
+            <div id="text-entry" class="module">
+                <h1 class="title">Title</h1>
+                <div id="tags-container-module">
+                    <div class="tag-list-container"></div>
+                    <div class="search-bar-container">
+                        <input type="text" id="search-bar-input" placeholder="Add tag...">
+                        <div id="search-results-container"></div>
+                    </div>
+                </div>
+                <div class="text-container"></div>
             </div>
         </div>
     </div>

@@ -8,19 +8,25 @@ const classActive = 'active';
     Html-elements to access.
  */
 
+// Base-Page
+
 // Sidebar
 const notebookListElement = document.querySelector('.notebook-list');
 
 // Landing-Page
+const landingPageContainer = document.getElementById('landing-page');
 const entrySearchInput = document.getElementById('entry-search-input');
 const entrySearchResultTable = document.getElementById('entry-table');
 
 // TextEntries
-const titleElement = document.querySelector('h1');
-const textElement = document.querySelector('.text');
-const tagsElement = document.querySelector('.tag-list-container');
-const tagsSearchInput = document.getElementById('search-bar-input');
-const tagsSearchResultContainer = document.getElementById('search-results-container');
+let textEntryElement = {
+    container: document.getElementById('text-entry'),
+    title: document.querySelector('h1'),
+    text: document.querySelector('.text-container'),
+    tags: document.querySelector('.tag-list-container'),
+    tagsSearchInput: document.getElementById('search-bar-input'),
+    tagsSearchResultContainer: document.getElementById('search-results-container'),
+};
 
 /*
     Necessary global variables.
@@ -139,7 +145,7 @@ function CreateNotebookElement(notebookEntry) {
     notebookElement.textContent = notebookEntry.title;
     // Event listener to select notebook entry.
     notebookElement.addEventListener('click', () => {
-        ShowTextEntry(notebookEntry.id);
+        DisplayTextEntry(notebookEntry.id);
         notebookListElement.querySelectorAll('li').forEach((li) => {
             li.classList.remove(classActive);
         });
@@ -152,18 +158,19 @@ function CreateNotebookElement(notebookEntry) {
 /*
     Show a textEntry.
  */
-function ShowTextEntry(textEntryId) {
-    return;
+function DisplayTextEntry(textEntryId) {
+    ResetView();
+    textEntryElement.container.classList.remove('hidden');
 
     const textEntry = noteKeeper.GetTextEntryById(textEntryId);
     currentTextEntry = textEntry;
-    titleElement.textContent = textEntry.title;
-    textElement.innerHTML = textEntry.text;
+    textEntryElement.title.textContent = textEntry.title;
+    textEntryElement.text.innerHTML = textEntry.text;
 
     const tags = noteKeeper.GetTagsByIds(textEntry.tagIds);
-    tagsElement.innerHTML = '';
+    textEntryElement.tags.innerHTML = '';
     for (let tag of tags) {
-        tagsElement.appendChild(CreateTextEntryTagButton(tag, textEntry));
+        textEntryElement.tags.appendChild(CreateTextEntryTagButton(tag, textEntry));
     }
 }
 
@@ -173,7 +180,7 @@ function CreateTextEntryTagButton(tag, textEntry) {
     tagElement.innerHTML = tag.title;
     tagElement.addEventListener('click', () => {
         textEntry.tagIds.splice(textEntry.tagIds.indexOf(tag.id), 1);
-        tagsElement.removeChild(tagElement);
+        textEntryElement.tags.removeChild(tagElement);
     });
 
     return tagElement;
@@ -211,30 +218,29 @@ function DisplayTagSuggestions(suggestions) {
 }
 
 function InitializeTagSearch(){
-    tagsSearchInput.addEventListener('input', () => {
-        const value = tagsSearchInput.value.trim();
+    textEntryElement.tagsSearchInput.addEventListener('input', () => {
+        const value = textEntryElement.tagsSearchInput.value.trim();
         const results = SearchSimilarStrings(value, noteKeeper.tags.map(tag => tag.title).sort());
         DisplayTagSuggestions(results);
     });
 
-    tagsSearchInput.addEventListener('keyup', (event) => {
+    textEntryElement.tagsSearchInput.addEventListener('keyup', (event) => {
         if (event.key === 'Enter' || event.keyCode === 13) {
-            AddTagToEntry(tagsSearchInput.value.trim(), currentTextEntry);
-            tagsSearchInput.value = '';
-            tagsSearchResultContainer.style.display = 'none';
-            tagsSearchInput.blur();
+            AddTagToEntry(textEntryElement.tagsSearchInput.value.trim(), currentTextEntry);
+            textEntryElement.tagsSearchInput.value = '';
+            textEntryElement.tagsSearchResultContainer.style.display = 'none';
+            textEntryElement.tagsSearchInput.blur();
 
-            ShowTextEntry(currentTextEntry.id);
+            DisplayTextEntry(currentTextEntry.id);
         }
     });
 
     document.addEventListener('click', event => {
         if (!event.target.closest('.search-bar-container')) {
-            tagsSearchResultContainer.style.display = 'none';
+            textEntryElement.tagsSearchResultContainer.style.display = 'none';
         }
     });
 }
-
 
 function PopulateSidebar() {
     const textEntries = noteKeeper.textEntries.filter(textEntry => textEntry.parentTextEntryId === null);
@@ -242,8 +248,7 @@ function PopulateSidebar() {
         const entryElement = document.createElement('li');
         entryElement.innerHTML = textEntry.title;
         entryElement.addEventListener('click', () => {
-            ShowTextEntry(textEntry.id);
-
+            DisplayTextEntry(textEntry.id);
         });
         notebookListElement.appendChild(entryElement);
     });
@@ -285,6 +290,20 @@ function InitializeTextEntrySearch() {
     });
 }
 
+function DisplayLandingPage() {
+    ResetView();
+
+    landingPageContainer.classList.remove('hidden');
+    DisplayEntrySuggestions(noteKeeper.textEntries.map(entry => entry.title).sort());
+}
+
+function ResetView() {
+    const modules = document.querySelectorAll('.module');
+    modules.forEach(module => {
+        module.classList.add('hidden');
+    });
+}
+
 function InitializeDummyData() {
     noteKeeper.AddTag('General');
     noteKeeper.AddTag('Monster');
@@ -307,40 +326,17 @@ function InitializeDummyData() {
     noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[3].id]);
 }
 
-function LoadHtmlTemplate(path) {
-    fetch(path)
-        .then(response => response.text())
-        .then(data => {
-            return data;
-        });
-}
-
-function ApplyTemplate(htmlElement, content) {
-    htmlElement.innerHTML = content;
-}
-
-function LoadRequiredModules() {
-    const required_modules = document.querySelectorAll('[id^="require-"]')
-
-    required_modules.forEach(required_module => {
-        const moduleId = required_module.id.replace('require-', '');
-
-        const module = LoadHtmlTemplate('templates/modules.html');
-
-    });
-}
-
-
 /*
     Here starts the actual script-execution.
  */
 
 const noteKeeper = new NoteKeeper();
-InitializeTextEntrySearch();
 InitializeDummyData();
 PopulateSidebar();
-ShowTextEntry(noteKeeper.textEntries[0].id);
-LoadRequiredModules();
+InitializeTextEntrySearch();
+InitializeTagSearch();
+
+DisplayLandingPage();
 
 ///////////////////////////////////////////////////////////////////////////
 
