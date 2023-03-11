@@ -185,7 +185,7 @@ function PopulateSidebar() {
 function InitializeTextEntrySearch() {
     entrySearchInput.addEventListener('input', () => {
         const value = entrySearchInput.value.trim();
-        const results = SearchSimilarStrings(value, noteKeeper.textEntries.map(entry => entry.title).sort());
+        const results = FindSimilarTextEntries(value);
         DisplayEntrySuggestions(results);
     });
 }
@@ -253,7 +253,7 @@ function DisplayLandingPage() {
     ResetView();
 
     landingPageContainer.classList.remove('hidden');
-    DisplayEntrySuggestions(noteKeeper.textEntries.map(entry => entry.title).sort());
+    DisplayEntrySuggestions(noteKeeper.textEntries);
 }
 
 function DisplayTextEntry(textEntryId) {
@@ -277,20 +277,20 @@ function DisplayTextEntry(textEntryId) {
     Update an UI element in current view.
  */
 
-function DisplayEntrySuggestions(suggestions) {
+function DisplayEntrySuggestions(textEntries) {
     // Clear any existing rows from the table.
     while (entrySearchResultTable.children[1]) {
         entrySearchResultTable.removeChild(entrySearchResultTable.children[1]);
     }
 
-    suggestions.forEach(suggestion => {
+    textEntries.forEach(textEntry => {
         const row = document.createElement('tr');
         row.addEventListener('click', () => {
 
         });
 
         const titleCell = document.createElement('td');
-        titleCell.textContent = suggestion;
+        titleCell.textContent = textEntry.title;
         row.appendChild(titleCell);
 
         const categoryCell = document.createElement('td');
@@ -298,7 +298,8 @@ function DisplayEntrySuggestions(suggestions) {
         row.appendChild(categoryCell);
 
         const tagsCell = document.createElement('td');
-        tagsCell.textContent = 'placeholder';
+        const tagNames = noteKeeper.GetTagsByIds(textEntry.tagIds).map(tag => tag.title);
+        tagsCell.textContent = tagNames.join(', ');
         row.appendChild(tagsCell);
 
         entrySearchResultTable.appendChild(row);
@@ -334,6 +335,12 @@ function SearchSimilarStrings(value, list) {
     return list.filter(item => {
         return item.toLowerCase().includes(value.toLowerCase());
     });
+}
+
+function FindSimilarTextEntries(value) {
+    return noteKeeper.textEntries.filter(textEntry => {
+        return textEntry.title.toLowerCase().includes(value.toLowerCase());
+    })
 }
 
 function GenerateGuid() {

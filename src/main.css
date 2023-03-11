@@ -246,6 +246,10 @@ button:hover {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 0;
 }
 #entry-table th {
     background-color: #444;
