@@ -275,34 +275,43 @@ function DisplayEntrySuggestions(suggestions) {
     });
 }
 
-entrySearchInput.addEventListener('input', () => {
-    const value = entrySearchInput.value.trim();
-    const results = SearchSimilarStrings(value, noteKeeper.textEntries.map(entry => entry.title).sort());
-    DisplayEntrySuggestions(results);
-});
+function InitializeTextEntrySearch() {
+    entrySearchInput.addEventListener('input', () => {
+        const value = entrySearchInput.value.trim();
+        const results = SearchSimilarStrings(value, noteKeeper.textEntries.map(entry => entry.title).sort());
+        DisplayEntrySuggestions(results);
+    });
+}
+
+function InitializeDummyData() {
+    noteKeeper.AddTag('General');
+    noteKeeper.AddTag('Monster');
+    noteKeeper.AddTag('NPC');
+    noteKeeper.AddTag('Organization');
+    noteKeeper.AddTag('Deity');
+    noteKeeper.AddTag('Trader');
+    noteKeeper.AddTag('Pirate');
+    noteKeeper.AddTag('Leader');
+    noteKeeper.AddTag('Shop');
+    noteKeeper.AddTag('Building');
+    noteKeeper.AddTag('Settlement');
+
+    noteKeeper.AddTextEntry(
+        'Home',
+        'This is the landing page, containing links to every possible function.',
+        [noteKeeper.tags[0].id]
+    );
+    noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[1].id, noteKeeper.tags[2].id]);
+    noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[3].id]);
+}
+
+/*
+    Here starts the actual script-execution.
+ */
 
 const noteKeeper = new NoteKeeper();
-
-noteKeeper.AddTag('General');
-noteKeeper.AddTag('Monster');
-noteKeeper.AddTag('NPC');
-noteKeeper.AddTag('Organization');
-noteKeeper.AddTag('Deity');
-noteKeeper.AddTag('Trader');
-noteKeeper.AddTag('Pirate');
-noteKeeper.AddTag('Leader');
-noteKeeper.AddTag('Shop');
-noteKeeper.AddTag('Building');
-noteKeeper.AddTag('Settlement');
-
-noteKeeper.AddTextEntry(
-    'Home',
-    'This is the landing page, containing links to every possible function.',
-    [noteKeeper.tags[0].id]
-);
-noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[1].id, noteKeeper.tags[2].id]);
-noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[3].id]);
-
+InitializeTextEntrySearch();
+InitializeDummyData();
 PopulateSidebar();
 ShowTextEntry(noteKeeper.textEntries[0].id);
 
