@@ -126,20 +126,11 @@ class NoteKeeper {
     }
 }
 
-/*
-    Update the UI-element for the notebook-list.
- */
-function PopulateNotebookList(tagId) {
-    notebookListElement.innerHTML = '';
-    const textEntries = noteKeeper.GetTextEntriesByTagId(tagId);
-    for (const textEntry of textEntries) {
-        notebookListElement.appendChild(CreateNotebookElement(textEntry));
-    }
-}
 
 /*
-    Create a UI-element for a textEntry.
+    Basic handling.
  */
+
 function CreateNotebookElement(notebookEntry) {
     const notebookElement = document.createElement('li');
     notebookElement.textContent = notebookEntry.title;
@@ -155,25 +146,6 @@ function CreateNotebookElement(notebookEntry) {
     return notebookElement;
 }
 
-/*
-    Show a textEntry.
- */
-function DisplayTextEntry(textEntryId) {
-    ResetView();
-    textEntryElement.container.classList.remove('hidden');
-
-    const textEntry = noteKeeper.GetTextEntryById(textEntryId);
-    currentTextEntry = textEntry;
-    textEntryElement.title.textContent = textEntry.title;
-    textEntryElement.text.innerHTML = textEntry.text;
-
-    const tags = noteKeeper.GetTagsByIds(textEntry.tagIds);
-    textEntryElement.tags.innerHTML = '';
-    for (let tag of tags) {
-        textEntryElement.tags.appendChild(CreateTextEntryTagButton(tag, textEntry));
-    }
-}
-
 function CreateTextEntryTagButton(tag, textEntry) {
     let tagElement = document.createElement('button');
     tagElement.classList.add('tag');
@@ -186,35 +158,34 @@ function CreateTextEntryTagButton(tag, textEntry) {
     return tagElement;
 }
 
-function SearchSimilarStrings(value, list) {
-    return list.filter(item => {
-        return item.toLowerCase().includes(value.toLowerCase());
-    });
-}
-
 function AddTagToEntry(tagTitle, entry) {
     const tag = noteKeeper.AddTag(tagTitle);
     entry.tagIds.indexOf(tag.id) === -1 ? entry.tagIds.push(tag.id) : 0;
 }
 
-function DisplayTagSuggestions(suggestions) {
-    tagsSearchResultContainer.innerHTML = '';
-    if (suggestions.length === 0) {
-        tagsSearchResultContainer.style.display = 'none';
-    } else {
-        suggestions.forEach(suggestion => {
-            const div = document.createElement('div');
-            div.classList.add('search-result');
-            div.textContent = suggestion;
-            div.addEventListener('click', () => {
-                AddTagToEntry(suggestion, currentTextEntry);
-                tagsSearchInput.value = '';
-                tagsSearchResultContainer.style.display = 'none';
-            });
-            tagsSearchResultContainer.appendChild(div);
+
+/*
+    Initialization of elements.
+ */
+
+function PopulateSidebar() {
+    const textEntries = noteKeeper.textEntries.filter(textEntry => textEntry.parentTextEntryId === null);
+    textEntries.forEach(textEntry => {
+        const entryElement = document.createElement('li');
+        entryElement.innerHTML = textEntry.title;
+        entryElement.addEventListener('click', () => {
+            DisplayTextEntry(textEntry.id);
         });
-        tagsSearchResultContainer.style.display = 'block';
-    }
+        notebookListElement.appendChild(entryElement);
+    });
+}
+
+function InitializeTextEntrySearch() {
+    entrySearchInput.addEventListener('input', () => {
+        const value = entrySearchInput.value.trim();
+        const results = SearchSimilarStrings(value, noteKeeper.textEntries.map(entry => entry.title).sort());
+        DisplayEntrySuggestions(results);
+    });
 }
 
 function InitializeTagSearch(){
@@ -242,17 +213,67 @@ function InitializeTagSearch(){
     });
 }
 
-function PopulateSidebar() {
-    const textEntries = noteKeeper.textEntries.filter(textEntry => textEntry.parentTextEntryId === null);
-    textEntries.forEach(textEntry => {
-        const entryElement = document.createElement('li');
-        entryElement.innerHTML = textEntry.title;
-        entryElement.addEventListener('click', () => {
-            DisplayTextEntry(textEntry.id);
-        });
-        notebookListElement.appendChild(entryElement);
+function InitializeDummyData() {
+    noteKeeper.AddTag('General');
+    noteKeeper.AddTag('Monster');
+    noteKeeper.AddTag('NPC');
+    noteKeeper.AddTag('Organization');
+    noteKeeper.AddTag('Deity');
+    noteKeeper.AddTag('Trader');
+    noteKeeper.AddTag('Pirate');
+    noteKeeper.AddTag('Leader');
+    noteKeeper.AddTag('Shop');
+    noteKeeper.AddTag('Building');
+    noteKeeper.AddTag('Settlement');
+
+    noteKeeper.AddTextEntry(
+        'Home',
+        'This is the landing page, containing links to every possible function.',
+        [noteKeeper.tags[0].id]
+    );
+    noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[1].id, noteKeeper.tags[2].id]);
+    noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[3].id]);
+}
+
+
+/*
+    Setting a new view.
+ */
+
+function ResetView() {
+    const modules = document.querySelectorAll('.module');
+    modules.forEach(module => {
+        module.classList.add('hidden');
     });
 }
+
+function DisplayLandingPage() {
+    ResetView();
+
+    landingPageContainer.classList.remove('hidden');
+    DisplayEntrySuggestions(noteKeeper.textEntries.map(entry => entry.title).sort());
+}
+
+function DisplayTextEntry(textEntryId) {
+    ResetView();
+    textEntryElement.container.classList.remove('hidden');
+
+    const textEntry = noteKeeper.GetTextEntryById(textEntryId);
+    currentTextEntry = textEntry;
+    textEntryElement.title.textContent = textEntry.title;
+    textEntryElement.text.innerHTML = textEntry.text;
+
+    const tags = noteKeeper.GetTagsByIds(textEntry.tagIds);
+    textEntryElement.tags.innerHTML = '';
+    for (let tag of tags) {
+        textEntryElement.tags.appendChild(CreateTextEntryTagButton(tag, textEntry));
+    }
+}
+
+
+/*
+    Update an UI element in current view.
+ */
 
 function DisplayEntrySuggestions(suggestions) {
     // Clear any existing rows from the table.
@@ -282,49 +303,26 @@ function DisplayEntrySuggestions(suggestions) {
     });
 }
 
-function InitializeTextEntrySearch() {
-    entrySearchInput.addEventListener('input', () => {
-        const value = entrySearchInput.value.trim();
-        const results = SearchSimilarStrings(value, noteKeeper.textEntries.map(entry => entry.title).sort());
-        DisplayEntrySuggestions(results);
-    });
+function DisplayTagSuggestions(suggestions) {
+    tagsSearchResultContainer.innerHTML = '';
+    if (suggestions.length === 0) {
+        tagsSearchResultContainer.style.display = 'none';
+    } else {
+        suggestions.forEach(suggestion => {
+            const div = document.createElement('div');
+            div.classList.add('search-result');
+            div.textContent = suggestion;
+            div.addEventListener('click', () => {
+                AddTagToEntry(suggestion, currentTextEntry);
+                tagsSearchInput.value = '';
+                tagsSearchResultContainer.style.display = 'none';
+            });
+            tagsSearchResultContainer.appendChild(div);
+        });
+        tagsSearchResultContainer.style.display = 'block';
+    }
 }
 
-function DisplayLandingPage() {
-    ResetView();
-
-    landingPageContainer.classList.remove('hidden');
-    DisplayEntrySuggestions(noteKeeper.textEntries.map(entry => entry.title).sort());
-}
-
-function ResetView() {
-    const modules = document.querySelectorAll('.module');
-    modules.forEach(module => {
-        module.classList.add('hidden');
-    });
-}
-
-function InitializeDummyData() {
-    noteKeeper.AddTag('General');
-    noteKeeper.AddTag('Monster');
-    noteKeeper.AddTag('NPC');
-    noteKeeper.AddTag('Organization');
-    noteKeeper.AddTag('Deity');
-    noteKeeper.AddTag('Trader');
-    noteKeeper.AddTag('Pirate');
-    noteKeeper.AddTag('Leader');
-    noteKeeper.AddTag('Shop');
-    noteKeeper.AddTag('Building');
-    noteKeeper.AddTag('Settlement');
-
-    noteKeeper.AddTextEntry(
-        'Home',
-        'This is the landing page, containing links to every possible function.',
-        [noteKeeper.tags[0].id]
-    );
-    noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[1].id, noteKeeper.tags[2].id]);
-    noteKeeper.AddTextEntry('Test3', 'Test3', [noteKeeper.tags[3].id]);
-}
 
 /*
     Here starts the actual script-execution.
@@ -362,6 +360,12 @@ function GetDataEntries() {
 
 function SaveDataEntries(tagTypes) {
     localStorage.setItem(dataEntryStorageKey, JSON.stringify(tagTypes));
+}
+
+function SearchSimilarStrings(value, list) {
+    return list.filter(item => {
+        return item.toLowerCase().includes(value.toLowerCase());
+    });
 }
 
 function GenerateGuid() {
