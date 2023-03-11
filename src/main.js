@@ -21,8 +21,8 @@ const entrySearchResultTable = document.getElementById('entry-table');
 // TextEntries
 let textEntryElement = {
     container: document.getElementById('text-entry'),
-    title: document.querySelector('h1'),
-    text: document.querySelector('.text-container'),
+    title: document.getElementById('text-entry-title'),
+    text: document.getElementById('text-entry-text'),
     tags: document.querySelector('.tag-list-container'),
     tagsSearchInput: document.getElementById('search-bar-input'),
     tagsSearchResultContainer: document.getElementById('search-results-container'),
@@ -227,8 +227,8 @@ function InitializeDummyData() {
     noteKeeper.AddTag('Settlement');
 
     noteKeeper.AddTextEntry(
-        'Home',
-        'This is the landing page, containing links to every possible function.',
+        'Test1',
+        'Text for test1.',
         [noteKeeper.tags[0].id]
     );
     noteKeeper.AddTextEntry('Test2', 'Test2', [noteKeeper.tags[1].id, noteKeeper.tags[2].id]);
@@ -260,7 +260,7 @@ function DisplayTextEntry(textEntryId) {
 
     const textEntry = noteKeeper.GetTextEntryById(textEntryId);
     currentTextEntry = textEntry;
-    textEntryElement.title.textContent = textEntry.title;
+    textEntryElement.title.innerHTML = textEntry.title;
     textEntryElement.text.innerHTML = textEntry.text;
 
     const tags = noteKeeper.GetTagsByIds(textEntry.tagIds);
@@ -304,9 +304,9 @@ function DisplayEntrySuggestions(suggestions) {
 }
 
 function DisplayTagSuggestions(suggestions) {
-    tagsSearchResultContainer.innerHTML = '';
+    textEntryElement.tagsSearchResultContainer.innerHTML = '';
     if (suggestions.length === 0) {
-        tagsSearchResultContainer.style.display = 'none';
+        textEntryElement.tagsSearchResultContainer.style.display = 'none';
     } else {
         suggestions.forEach(suggestion => {
             const div = document.createElement('div');
@@ -314,13 +314,34 @@ function DisplayTagSuggestions(suggestions) {
             div.textContent = suggestion;
             div.addEventListener('click', () => {
                 AddTagToEntry(suggestion, currentTextEntry);
-                tagsSearchInput.value = '';
-                tagsSearchResultContainer.style.display = 'none';
+                textEntryElement.tagsSearchInput.value = '';
+                textEntryElement.tagsSearchResultContainer.style.display = 'none';
             });
-            tagsSearchResultContainer.appendChild(div);
+            textEntryElement.tagsSearchResultContainer.appendChild(div);
         });
-        tagsSearchResultContainer.style.display = 'block';
+        textEntryElement.tagsSearchResultContainer.style.display = 'block';
     }
+}
+
+
+/*
+    Global helper functions.
+ */
+
+function SearchSimilarStrings(value, list) {
+    return list.filter(item => {
+        return item.toLowerCase().includes(value.toLowerCase());
+    });
+}
+
+function GenerateGuid() {
+    let s4 = () => {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    };
+
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
 
@@ -360,20 +381,4 @@ function GetDataEntries() {
 
 function SaveDataEntries(tagTypes) {
     localStorage.setItem(dataEntryStorageKey, JSON.stringify(tagTypes));
-}
-
-function SearchSimilarStrings(value, list) {
-    return list.filter(item => {
-        return item.toLowerCase().includes(value.toLowerCase());
-    });
-}
-
-function GenerateGuid() {
-    let s4 = () => {
-        return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
-            .substring(1);
-    };
-
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
