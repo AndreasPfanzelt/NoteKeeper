@@ -692,10 +692,34 @@ function SearchSimilarStrings(value, list) {
     });
 }
 
+function FindSimilarTags(value) {
+    return noteKeeper.tags.filter(tag => {
+        return tag.title.toLowerCase().includes(value.toLowerCase());
+    });
+}
+
 function FindSimilarTextEntries(value) {
-    return noteKeeper.textEntries.filter(textEntry => {
+    let viableTextEntries = noteKeeper.textEntries.filter(textEntry => {
         return textEntry.title.toLowerCase().includes(value.toLowerCase());
-    })
+    });
+
+    const foundTextEntryIds = new Set(viableTextEntries.map(entry => entry.id));
+    const viableTags = FindSimilarTags(value);
+    if (viableTags) {
+        const textEntriesByTags = noteKeeper.textEntries.filter(textEntry => {
+            for (const tag of viableTags) {
+                if (textEntry.tagIds.includes(tag.id)){
+                    return !foundTextEntryIds.has(textEntry.id);
+                }
+            }
+
+            return false;
+        });
+
+        viableTextEntries = viableTextEntries.concat(textEntriesByTags);
+    }
+
+    return viableTextEntries;
 }
 
 function GenerateGuid() {
