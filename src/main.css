@@ -67,9 +67,57 @@ body {
     padding: 1rem;
 }
 
-.text-container {
-    margin-top: 30px;
+/*
+    Text-entry.
+ */
+
+#text-entry-title {
+    text-align: center;
+}
+
+#tags-container-module {
+    margin-top: 35px;
+}
+
+#text-entry-container {
+    padding-top: 20px;
     line-height: 1.5;
+    position: relative;
+}
+
+.text-content {
+    margin-top: 15px;
+}
+
+.rectangle-transparent-button {
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.rectangle-transparent-button i {
+    font-size: 24px;
+    color: #555;
+}
+
+.rectangle-transparent-button:hover i {
+    color: #FBFAF5;
+ }
+
+#text-entry-edit-btn {
+    background-color: transparent;
+}
+
+#text-entry-save-btn {
+     background-color: transparent;
+ }
+
+.ql-toolbar {
+    margin-top: 15px;
 }
 
 /*

@@ -4,6 +4,7 @@ const dataEntryStorageKey = "wbnotes-dataentries";
 
 const classActive = 'active';
 
+
 /*
     Settings.
  */
@@ -34,10 +35,21 @@ let textEntryElement = {
     tagsSearchResultContainer: document.getElementById('search-results-container'),
 };
 
+let textEditor = {
+    editButton: document.getElementById('text-entry-edit-btn'),
+    saveButton: document.getElementById('text-entry-save-btn'),
+    toolbar: document.querySelector('.ql-toolbar'),
+    content: document.getElementById('text-entry-editor'),
+}
+
+
 /*
     Necessary global variables.
  */
 let currentTextEntry;
+let noteKeeper;
+let quillEditor;
+
 
 /*
     Classes.
@@ -572,6 +584,20 @@ function InitializeDummyData() {
     noteKeeper.AddTextEntry('Tarrasque', tarrasqueText, tarrasqueTags.map(tag => tag.id));
 }
 
+function InitializeTextEditor() {
+    const options = {
+        //debug: 'info',
+        placeholder: 'Compose an epic ...',
+        theme: 'snow'
+    }
+    quillEditor = new Quill('#text-entry-editor', options);
+
+    textEditor.editButton.addEventListener('click', DisplayTextEditor);
+    textEditor.saveButton.addEventListener('click', DisplayTextView);
+
+    textEditor.toolbar = document.querySelector('.ql-toolbar');
+}
+
 
 /*
     Setting a new view.
@@ -593,19 +619,42 @@ function DisplayLandingPage() {
 
 function DisplayTextEntry(textEntryId) {
     ResetView();
+    textEditor.editButton.style.display = 'block';
+    textEditor.saveButton.style.display = 'none';
     textEntryElement.container.classList.remove('hidden');
+    textEditor.toolbar.classList.add('hidden');
+    textEditor.content.classList.add('hidden');
 
     const textEntry = noteKeeper.GetTextEntryById(textEntryId);
     currentTextEntry = textEntry;
     textEntryElement.title.innerHTML = textEntry.title;
-    //textEntryElement.text.innerHTML = textEntry.text;
-    quillEditor.setContents(quillEditor.clipboard.convert(textEntry.text));
+    textEntryElement.text.innerHTML = textEntry.text;
 
     const tags = noteKeeper.GetTagsByIds(textEntry.tagIds);
     textEntryElement.tags.innerHTML = '';
     for (let tag of tags) {
         textEntryElement.tags.appendChild(CreateTextEntryTagButton(tag, textEntry));
     }
+}
+
+function DisplayTextEditor() {
+    quillEditor.setContents(quillEditor.clipboard.convert(textEntryElement.text.innerHTML));
+    textEditor.editButton.style.display = 'none';
+    textEditor.saveButton.style.display = 'block';
+
+    textEntryElement.text.style.display = 'none';
+    textEditor.toolbar.classList.remove('hidden');
+    textEditor.content.classList.remove('hidden');
+}
+
+function DisplayTextView() {
+    textEntryElement.text.innerHTML = quillEditor.root.innerHTML ;
+    textEditor.editButton.style.display = 'block';
+    textEditor.saveButton.style.display = 'none';
+
+    textEntryElement.text.style.display = 'block';
+    textEditor.toolbar.classList.add('hidden');
+    textEditor.content.classList.add('hidden');
 }
 
 
@@ -738,18 +787,12 @@ function GenerateGuid() {
     Here starts the actual script-execution.
  */
 
-const noteKeeper = new NoteKeeper();
+noteKeeper = new NoteKeeper();
 InitializeDummyData();
 PopulateSidebar();
 InitializeTextEntrySearch();
 InitializeTagSearch();
-
-var options = {
-    debug: 'info',
-    placeholder: 'Compose an epic ...',
-    theme: 'snow'
-}
-var quillEditor = new Quill('#editor', options);
+InitializeTextEditor();
 
 DisplayLandingPage();
 
