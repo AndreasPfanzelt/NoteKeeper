@@ -598,7 +598,8 @@ function DisplayTextEntry(textEntryId) {
     const textEntry = noteKeeper.GetTextEntryById(textEntryId);
     currentTextEntry = textEntry;
     textEntryElement.title.innerHTML = textEntry.title;
-    textEntryElement.text.innerHTML = textEntry.text;
+    //textEntryElement.text.innerHTML = textEntry.text;
+    quillEditor.setContents(quillEditor.clipboard.convert(textEntry.text));
 
     const tags = noteKeeper.GetTagsByIds(textEntry.tagIds);
     textEntryElement.tags.innerHTML = '';
@@ -742,6 +743,13 @@ InitializeDummyData();
 PopulateSidebar();
 InitializeTextEntrySearch();
 InitializeTagSearch();
+
+var options = {
+    debug: 'info',
+    placeholder: 'Compose an epic ...',
+    theme: 'snow'
+}
+var quillEditor = new Quill('#editor', options);
 
 DisplayLandingPage();
 
